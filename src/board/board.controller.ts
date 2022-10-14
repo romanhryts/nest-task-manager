@@ -15,6 +15,11 @@ export class BoardController {
         return this.boardService.getAll(id);
     }
 
+    @Get('/board/:id')
+    async getOneBoard(@Param('id') id: string): Promise<BoardDocument> {
+        return this.boardService.getOneBoard(id);
+    }
+
     @Post()
     async addBoard(@Body() dto: CreateBoardDto): Promise<BoardDocument> {
         return this.boardService.addBoard(dto);

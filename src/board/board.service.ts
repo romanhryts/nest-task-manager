@@ -17,13 +17,22 @@ export class BoardService {
 
     async getAll(id: string): Promise<BoardDocument[]> {
         try {
-            const boards: BoardDocument[] = await this.boardModel.find({ user_id: id });
+            const boards: BoardDocument[] = await this.boardModel.find({ user_id: id }).sort({ createdAt: -1 });
             if (!boards.length) {
                 throw new HttpException('Boards not found', HttpStatus.NOT_FOUND);
             }
             return boards;
         } catch (e) {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async getOneBoard(id: string): Promise<BoardDocument> {
+        try {
+            const board: BoardDocument = await this.boardModel.findOne({_id: id}).populate('tasks');
+            return board;
+        } catch (e) {
+            throw new HttpException('Board not found', HttpStatus.NOT_FOUND);
         }
     }
 
