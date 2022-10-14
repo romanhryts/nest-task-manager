@@ -6,6 +6,7 @@ import { Task, TaskDocument } from './schemas/task.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { AddTaskDto } from './dto/add-task.dto';
 
 @Injectable()
 export class BoardService {
@@ -29,7 +30,7 @@ export class BoardService {
 
     async getOneBoard(id: string): Promise<BoardDocument> {
         try {
-            const board: BoardDocument = await this.boardModel.findOne({_id: id}).populate('tasks');
+            const board: BoardDocument = await this.boardModel.findOne({ _id: id }).populate('tasks');
             return board;
         } catch (e) {
             throw new HttpException('Board not found', HttpStatus.NOT_FOUND);
@@ -75,6 +76,25 @@ export class BoardService {
             };
             const updated: BoardDocument = await this.boardModel.findByIdAndUpdate(id, payload, { returnOriginal: false });
             return updated;
+        } catch (e) {
+            throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async addTask(dto: AddTaskDto): Promise<TaskDocument> {
+        try {
+            const { board_id, name, status } = dto;
+            if (!board_id || !name || !status) {
+                throw new HttpException('Please provide board_id, name and status', HttpStatus.BAD_REQUEST);
+            }
+            const board: BoardDocument = await this.boardModel.findById(board_id);
+            if (!board) {
+                throw new HttpException('Board not found', HttpStatus.NOT_FOUND);
+            }
+            const task: TaskDocument = await this.taskModel.create({ name, status });
+            board.tasks.push(task._id);
+            await board.save();
+            return task;
         } catch (e) {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
         }

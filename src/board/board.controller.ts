@@ -4,6 +4,8 @@ import { BoardDocument } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { AddTaskDto } from './dto/add-task.dto';
+import { TaskDocument } from './schemas/task.schema';
 
 @Controller('boards')
 export class BoardController {
@@ -33,5 +35,10 @@ export class BoardController {
     @Put()
     async updateBoard(@Body() dto: UpdateBoardDto): Promise<BoardDocument> {
         return this.boardService.updateBoard(dto);
+    }
+
+    @Post('/task')
+    async addTask(@Body() dto: AddTaskDto): Promise<TaskDocument> {
+        return this.boardService.addTask(dto);
     }
 }
