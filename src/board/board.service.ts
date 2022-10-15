@@ -8,21 +8,24 @@ import { DeleteBoardDto } from './dto/delete-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { DeleteTaskDto } from './dto/delete-task.dto';
+import { LoginResponseDto } from '../auth/dto/login-response.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 
 @Injectable()
 export class BoardService {
     constructor(
         @InjectModel(Board.name) private boardModel: Model<BoardDocument>,
-        @InjectModel(Task.name) private taskModel: Model<TaskDocument>
+        @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
+        private jwtService: JwtService
     ) {
     }
 
-    async getAll(id: string): Promise<BoardDocument[]> {
+    async getAll(request: Request): Promise<BoardDocument[]> {
         try {
-            const boards: BoardDocument[] = await this.boardModel.find({ user_id: id }).sort({ createdAt: -1 });
-            if (!boards.length) {
-                throw new HttpException('Boards not found', HttpStatus.NOT_FOUND);
-            }
+            const cookie: string = request.cookies['jwt'];
+            const data: LoginResponseDto = await this.jwtService.verifyAsync(cookie);
+            const boards: BoardDocument[] = await this.boardModel.find({ user_id: data.id }).sort({ createdAt: -1 });
             return boards;
         } catch (e) {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);

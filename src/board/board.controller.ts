@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { BoardDocument } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -7,18 +7,19 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { TaskDocument } from './schemas/task.schema';
 import { DeleteTaskDto } from './dto/delete-task.dto';
+import { Request } from 'express';
 
 @Controller('boards')
 export class BoardController {
     constructor(private boardService: BoardService) {
     }
 
-    @Get(':id')
-    async getAll(@Param('id') id: string): Promise<BoardDocument[]> {
-        return this.boardService.getAll(id);
+    @Get()
+    async getAll(@Req() request: Request): Promise<BoardDocument[]> {
+        return this.boardService.getAll(request);
     }
 
-    @Get('/board/:id')
+    @Get('/:id')
     async getOneBoard(@Param('id') id: string): Promise<BoardDocument> {
         return this.boardService.getOneBoard(id);
     }
