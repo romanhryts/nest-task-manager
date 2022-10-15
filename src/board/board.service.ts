@@ -7,6 +7,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { AddTaskDto } from './dto/add-task.dto';
+import { DeleteTaskDto } from './dto/delete-task.dto';
 
 @Injectable()
 export class BoardService {
@@ -99,5 +100,23 @@ export class BoardService {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async deleteTask(dto: DeleteTaskDto): Promise<string> {
+        try {
+            const { board_id, id } = dto;
+            if (!board_id || !id) {
+                throw new HttpException('Please provide board_id and id', HttpStatus.BAD_REQUEST);
+            }
+            const board: BoardDocument = await this.boardModel.findById(board_id);
+            const task: TaskDocument = await this.taskModel.findByIdAndDelete(id);
+            board.tasks = board.tasks.filter(item => '' + item !== '' + task._id);
+            await board.save();
+            return task._id;
+        } catch (e) {
+            throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // async updateTask
 
 }
