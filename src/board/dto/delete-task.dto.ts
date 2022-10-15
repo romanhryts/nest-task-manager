@@ -1,4 +1,4 @@
 export class DeleteTaskDto {
-    id: string;
-    board_id: string;
+    readonly id: string;
+    readonly board_id: string;
 }

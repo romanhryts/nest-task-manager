@@ -11,6 +11,7 @@ import { DeleteTaskDto } from './dto/delete-task.dto';
 import { LoginResponseDto } from '../auth/dto/login-response.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class BoardService {
@@ -120,6 +121,21 @@ export class BoardService {
         }
     }
 
-    // async updateTask
-
+    async updateTask(dto: UpdateTaskDto): Promise<TaskDocument> {
+        try {
+            const { id, status, name } = dto;
+            if (!id || (!status && !name)) {
+                throw new HttpException('Please provide the id and at least status or name', HttpStatus.BAD_REQUEST);
+            }
+            const task: TaskDocument = await this.taskModel.findById(id);
+            const payload = {
+                status: status ? status : task.status,
+                name: name ? name : task.name
+            }
+            const updated: TaskDocument = await this.taskModel.findByIdAndUpdate(id, payload, { returnOriginal: false });
+            return updated;
+        } catch (e) {
+            throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -8,6 +8,7 @@ import { AddTaskDto } from './dto/add-task.dto';
 import { TaskDocument } from './schemas/task.schema';
 import { DeleteTaskDto } from './dto/delete-task.dto';
 import { Request } from 'express';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('boards')
 export class BoardController {
@@ -47,5 +48,10 @@ export class BoardController {
     @Delete('/task')
     async deleteTask(@Body() dto: DeleteTaskDto): Promise<string> {
         return this.boardService.deleteTask(dto);
+    }
+
+    @Put('/task')
+    async updateTask(@Body() dto: UpdateTaskDto): Promise<TaskDocument> {
+        return this.boardService.updateTask(dto);
     }
 }
