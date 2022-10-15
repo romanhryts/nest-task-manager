@@ -1,7 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Board, BoardDocument } from './schemas/board.schema';
+import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
+import { Request } from 'express';
+import { Board, BoardDocument } from './schemas/board.schema';
 import { Task, TaskDocument } from './schemas/task.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { DeleteBoardDto } from './dto/delete-board.dto';
@@ -9,9 +11,8 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { DeleteTaskDto } from './dto/delete-task.dto';
 import { LoginResponseDto } from '../auth/dto/login-response.dto';
-import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { CommentDto } from './dto/comment.dto';
 
 @Injectable()
 export class BoardService {
@@ -134,6 +135,37 @@ export class BoardService {
             }
             const updated: TaskDocument = await this.taskModel.findByIdAndUpdate(id, payload, { returnOriginal: false });
             return updated;
+        } catch (e) {
+            throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async addComment(dto: CommentDto): Promise<TaskDocument> {
+        try {
+            const { task_id, comment } = dto;
+            if (!task_id || !comment) {
+                throw new HttpException('Please provide task_id and comment', HttpStatus.BAD_REQUEST);
+            }
+            const task: TaskDocument = await this.taskModel.findById(task_id);
+            task.comments.push(comment);
+            await task.save();
+            return task;
+
+        } catch (e) {
+            throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async deleteComment(dto: CommentDto): Promise<TaskDocument> {
+        try {
+            const { task_id, comment } = dto;
+            if (!task_id || !comment) {
+                throw new HttpException('Please provide task_id and comment', HttpStatus.BAD_REQUEST);
+            }
+            const task: TaskDocument = await this.taskModel.findById(task_id);
+            task.comments = task.comments.filter(item => item !== comment);
+            await task.save();
+            return task;
         } catch (e) {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -14,9 +14,7 @@ export class Task {
     status: TaskStatus;
 
     @Prop({ default: [] })
-    comments: [
-        { type: string }
-    ]
+    comments: string[];
 
 }
 
