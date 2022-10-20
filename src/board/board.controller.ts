@@ -31,9 +31,9 @@ export class BoardController {
         return this.boardService.addBoard(dto);
     }
 
-    @Delete()
-    async deleteBoard(@Body() dto: DeleteBoardDto): Promise<string> {
-        return this.boardService.deleteBoard(dto);
+    @Delete('/:id')
+    async deleteBoard(@Body() dto: DeleteBoardDto, @Param('id') id: string): Promise<string> {
+        return this.boardService.deleteBoard(dto, id);
     }
 
     @Put()

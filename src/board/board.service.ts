@@ -27,7 +27,10 @@ export class BoardService {
         try {
             const cookie: string = request.cookies['jwt'];
             const data: LoginResponseDto = await this.jwtService.verifyAsync(cookie);
-            const boards: BoardDocument[] = await this.boardModel.find({ user_id: data.id }).sort({ createdAt: -1 });
+            const boards: BoardDocument[] = await this.boardModel
+                .find({ user_id: data.id })
+                .sort({ createdAt: -1 })
+                .populate('tasks');
             return boards;
         } catch (e) {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,10 +59,14 @@ export class BoardService {
         }
     }
 
-    async deleteBoard(dto: DeleteBoardDto): Promise<string> {
+    async deleteBoard(dto: DeleteBoardDto, id: string): Promise<string> {
         try {
-            const { id } = dto;
             const board: BoardDocument = await this.boardModel.findByIdAndDelete(id);
+            if (board.tasks.length) {
+                for (const taskId of board.tasks) {
+                    await this.taskModel.findByIdAndDelete(taskId);
+                }
+            }
             return board._id;
         } catch (e) {
             throw new HttpException('Board not found', HttpStatus.NOT_FOUND);
