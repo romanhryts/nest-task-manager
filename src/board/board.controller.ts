@@ -33,6 +33,7 @@ export class BoardController {
 
     @Delete('/:id')
     async deleteBoard(@Body() dto: DeleteBoardDto, @Param('id') id: string): Promise<string> {
+        console.log('deleteBoard')
         return this.boardService.deleteBoard(dto, id);
     }
 
@@ -46,8 +47,9 @@ export class BoardController {
         return this.boardService.addTask(dto);
     }
 
-    @Delete('/task')
-    async deleteTask(@Body() dto: DeleteTaskDto): Promise<string> {
+    @Delete('/:boardId/task/:id')
+    async deleteTask(@Param('id') id: string, @Param('boardId') board_id: string): Promise<string> {
+        const dto: DeleteTaskDto = { id, board_id };
         return this.boardService.deleteTask(dto);
     }
 

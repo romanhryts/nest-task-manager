@@ -1,4 +1,4 @@
-type TaskStatus = 'TODO' | 'PROGRESS' | 'DONE | ARCHIVE';
+type TaskStatus = 'TODO' | 'PROGRESS' | 'DONE';
 
 export class UpdateTaskDto {
     readonly id: string;
