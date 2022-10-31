@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { BoardDocument } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -33,7 +33,6 @@ export class BoardController {
 
     @Delete('/:id')
     async deleteBoard(@Body() dto: DeleteBoardDto, @Param('id') id: string): Promise<string> {
-        console.log('deleteBoard')
         return this.boardService.deleteBoard(dto, id);
     }
 
@@ -66,5 +65,10 @@ export class BoardController {
     @Delete('/task/comment')
     async deleteComment(@Body() dto: CommentDto): Promise<TaskDocument> {
         return this.boardService.deleteComment(dto);
+    }
+
+    @Patch('/:id/')
+    async changeColorType(@Param('id') id: string, @Body() dto: {field: string, value: string}): Promise<string> {
+        return this.boardService.changeColor(id, dto);
     }
 }

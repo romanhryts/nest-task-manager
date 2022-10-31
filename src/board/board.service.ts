@@ -177,4 +177,28 @@ export class BoardService {
             throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async changeColor(id: string, dto: {field: string, value: string}): Promise<string> {
+        try {
+            if (!id || !dto.field || !dto.value) {
+                throw new HttpException('Please provide id, color and value', HttpStatus.BAD_REQUEST);
+            }
+            const board: BoardDocument = await this.boardModel.findById(id);
+            switch (dto.field) {
+                case 'PROGRESS':
+                    board.progressListColor = JSON.parse(dto.value);
+                    break;
+                case 'DONE':
+                    board.doneListColor = JSON.parse(dto.value);
+                    break;
+                default:
+                    board.todoListColor = JSON.parse(dto.value);
+                    break;
+            }
+            await board.save();
+            return dto.value;
+        } catch (e) {
+            throw new HttpException(e.message, e.status || HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
