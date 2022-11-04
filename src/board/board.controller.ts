@@ -62,8 +62,12 @@ export class BoardController {
         return this.boardService.addComment(dto);
     }
 
-    @Delete('/task/comment')
-    async deleteComment(@Body() dto: CommentDto): Promise<TaskDocument> {
+    @Delete('/task/:taskId/comment/:text')
+    async deleteComment(
+        @Param('text') comment: string,
+        @Param('taskId') task_id: string
+    ): Promise<TaskDocument> {
+        const dto: CommentDto = {task_id, comment}
         return this.boardService.deleteComment(dto);
     }
 
