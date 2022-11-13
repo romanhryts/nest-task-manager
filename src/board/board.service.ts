@@ -6,7 +6,6 @@ import { Request } from 'express';
 import { Board, BoardDocument } from './schemas/board.schema';
 import { Task, TaskDocument } from './schemas/task.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { DeleteBoardDto } from './dto/delete-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { DeleteTaskDto } from './dto/delete-task.dto';
@@ -59,7 +58,7 @@ export class BoardService {
         }
     }
 
-    async deleteBoard(dto: DeleteBoardDto, id: string): Promise<string> {
+    async deleteBoard(id: string): Promise<string> {
         try {
             const board: BoardDocument = await this.boardModel.findByIdAndDelete(id);
             if (board.tasks.length) {

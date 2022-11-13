@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req } from '@ne
 import { BoardService } from './board.service';
 import { BoardDocument } from './schemas/board.schema';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { DeleteBoardDto } from './dto/delete-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { AddTaskDto } from './dto/add-task.dto';
 import { TaskDocument } from './schemas/task.schema';
@@ -32,8 +31,8 @@ export class BoardController {
     }
 
     @Delete('/:id')
-    async deleteBoard(@Body() dto: DeleteBoardDto, @Param('id') id: string): Promise<string> {
-        return this.boardService.deleteBoard(dto, id);
+    async deleteBoard(@Param('id') id: string): Promise<string> {
+        return this.boardService.deleteBoard(id);
     }
 
     @Put()
